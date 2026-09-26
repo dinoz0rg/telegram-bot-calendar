@@ -77,7 +77,7 @@ class RangeTelegramCalendar(CalendarBase):
     # -- screens ----------------------------------------------------------------------------
     def _first_rows(self) -> Rows:
         self.step = cb.DAY
-        return self._days()
+        return self._pick_start()
 
     def _arrows(self, step: str, title: Key, prev_d: date | None, next_d: date | None, start: date | None) -> list[Key]:
         def arrow(text: str, d: date | None) -> Key:
@@ -85,31 +85,39 @@ class RangeTelegramCalendar(CalendarBase):
 
         return [arrow(self.style.prev, prev_d), title, arrow(self.style.next, next_d)]
 
-    def _days(self, start: date | None = None, end: date | None = None) -> Rows:
+    def _month_grid(self, title_row: list[Key], start: date | None, end: date | None) -> Rows:
         first = grid.first_of_month(self.current_date)
-        last = grid.last_of_month(first)
-        title = f"{self._month_name(first.month)} {first.year}"
-        rows: Rows = []
-        if end is None:
-            prev_d = grid.try_add_months(first, -1) if first > grid.first_of_month(self.min_date) else None
-            next_d = grid.try_add_months(first, 1) if last < self.max_date else None
-            title_key = self._key(title, cb.GOTO, cb.MONTH, self.current_date, start)
-            rows.append(self._arrows(cb.DAY, title_key, prev_d, next_d, start))
-        else:
-            rows.append([self._key(title)])
-        rows.append(self._weekday_row())
+        rows: Rows = [title_row, self._weekday_row()]
         for week in grid.day_weeks(first.year, first.month):
             rows.append([self._day_key(first, n, start, end) for n in week])
-        if start is not None and end is not None:
-            rows.append([self._key(self.format_range(start, end))])
-            rows.append(
-                [
-                    self._key(self.style.confirm, cb.CONFIRM, cb.DAY, end, start),
-                    self._key(self.style.change, cb.CHANGE, cb.DAY, start),
-                ]
-            )
-        elif start is None:
-            rows += self._quick_picks()
+        return rows
+
+    def _title(self) -> str:
+        return f"{self._month_name(self.current_date.month)} {self.current_date.year}"
+
+    def _nav_grid(self, start: date | None) -> Rows:
+        first = grid.first_of_month(self.current_date)
+        last = grid.last_of_month(first)
+        prev_d = grid.try_add_months(first, -1) if first > grid.first_of_month(self.min_date) else None
+        next_d = grid.try_add_months(first, 1) if last < self.max_date else None
+        title_key = self._key(self._title(), cb.GOTO, cb.MONTH, self.current_date, start)
+        return self._month_grid(self._arrows(cb.DAY, title_key, prev_d, next_d, start), start, None)
+
+    def _pick_start(self) -> Rows:
+        return self._nav_grid(None) + self._quick_picks()
+
+    def _pick_end(self, start: date) -> Rows:
+        return self._nav_grid(start)
+
+    def _summary(self, start: date, end: date) -> Rows:
+        rows = self._month_grid([self._key(self._title())], start, end)
+        rows.append([self._key(self.format_range(start, end))])
+        rows.append(
+            [
+                self._key(self.style.confirm, cb.CONFIRM, cb.DAY, end, start),
+                self._key(self.style.change, cb.CHANGE, cb.DAY, start),
+            ]
+        )
         return rows
 
     def _day_key(self, first: date, n: int, start: date | None, end: date | None) -> Key:
@@ -162,17 +170,17 @@ class RangeTelegramCalendar(CalendarBase):
         if p.action == cb.GOTO:
             if p.step == cb.MONTH:
                 return self._screen(self._months(p.start), cb.MONTH)
-            return self._screen(self._days(p.start), cb.DAY)
+            return self._screen(self._pick_end(p.start) if p.start is not None else self._pick_start(), cb.DAY)
         if p.action == cb.CHANGE:
-            return self._screen(self._days(), cb.DAY)
+            return self._screen(self._pick_start(), cb.DAY)
         if not self._in_range(p.day) or (p.start is not None and not self._in_range(p.start)):
             return NO_RESULT
         if p.action == cb.SELECT:
             if p.start is None:
-                return self._screen(self._days(start=p.day), cb.DAY)
+                return self._screen(self._pick_end(p.day), cb.DAY)
             lo, hi = sorted((p.start, p.day))
             self.current_date = hi
-            return self._screen(self._days(lo, hi), SUMMARY)
+            return self._screen(self._summary(lo, hi), SUMMARY)
         if p.action == cb.CONFIRM and p.start is not None:
             lo, hi = sorted((p.start, p.day))
             return (lo, hi), None, SUMMARY

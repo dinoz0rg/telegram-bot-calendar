@@ -5,7 +5,7 @@ from __future__ import annotations
 import random
 from dataclasses import replace
 from datetime import date
-from typing import Any, Callable, ClassVar, Optional, Union
+from typing import Any, Callable, ClassVar, Final, Optional, Union, final
 
 from telegram_bot_calendar import callback as cb
 from telegram_bot_calendar import grid, render
@@ -13,7 +13,15 @@ from telegram_bot_calendar.locales import MONTH_NAMES, WEEKDAY_NAMES, check_loca
 from telegram_bot_calendar.style import DEFAULT_STYLE, Style
 
 
+@final
 class _Marker:
+    """Type of the ``CANCELLED`` / ``EXPIRED`` sentinels. Compare with ``is``."""
+
+    __slots__ = ("_name",)
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        raise TypeError("_Marker is final")
+
     def __init__(self, name: str) -> None:
         self._name = name
 
@@ -21,9 +29,9 @@ class _Marker:
         return self._name
 
 
-CANCELLED: Any = _Marker("CANCELLED")
+CANCELLED: Final[_Marker] = _Marker("CANCELLED")
 """``result`` when the user taps Cancel."""
-EXPIRED: Any = _Marker("EXPIRED")
+EXPIRED: Final[_Marker] = _Marker("EXPIRED")
 """``result`` when a tap carries a different ``session`` token."""
 
 
@@ -36,7 +44,8 @@ NO_RESULT: tuple[None, None, None] = (None, None, None)
 LSTEP: dict[str, str] = {cb.YEAR: "year", cb.MONTH: "month", cb.DAY: "day"}
 
 Markup = Union[str, list[list[Any]]]
-Outcome = tuple[Any, Optional[Markup], Optional[str]]
+Result = Union[date, tuple[date, date], _Marker, None]
+Outcome = tuple[Result, Optional[Markup], Optional[str]]
 
 
 class CalendarBase:
@@ -68,7 +77,7 @@ class CalendarBase:
             raise ValueError("session must be 1-8 ASCII letters or digits")
         check_locale(locale)
         self.calendar_id = calendar_id
-        self.current_date = current_date or date.today()
+        self.current_date = current_date or today()
         self.locale = locale
         self.min_date = min_date or date(1, 1, 1)
         self.max_date = max_date or date(2999, 12, 31)

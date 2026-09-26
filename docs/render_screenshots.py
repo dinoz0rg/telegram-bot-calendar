@@ -23,6 +23,7 @@ from telegram_bot_calendar import (  # noqa: E402
     WYearTelegramCalendar,
     core,
 )
+from telegram_bot_calendar.locales import WEEKDAY_NAMES  # noqa: E402
 
 TODAY = date(2026, 5, 14)
 THEMES: dict[str, dict[str, str]] = {
@@ -86,7 +87,13 @@ def key(button: dict[str, Any]) -> str:
 
 def page(text: str, markup: str, theme: dict[str, str]) -> str:
     rows = [row for row in json.loads(markup)["inline_keyboard"] if row]
-    keyboard = "".join('<div class="row">' + "".join(key(b) for b in row) + "</div>" for row in rows)
+    weekdays = WEEKDAY_NAMES["en"]
+
+    def row_html(row: list[dict[str, Any]]) -> str:
+        cls = "row weekdays" if [b["text"] for b in row] == list(weekdays) else "row"
+        return f'<div class="{cls}">' + "".join(key(b) for b in row) + "</div>"
+
+    keyboard = "".join(row_html(row) for row in rows)
     t = theme
     return f"""<!doctype html><html lang="en"><meta charset="utf-8"><style>
 body {{ margin: 0; background: {t["page"]}; font: 15px/1.35 -apple-system, "Segoe UI", Roboto, sans-serif; }}
@@ -101,12 +108,13 @@ body {{ margin: 0; background: {t["page"]}; font: 15px/1.35 -apple-system, "Sego
 .msg {{ display: flex; flex-direction: column; }}
 .bubble {{ background: {t["bubble"]}; color: {t["text"]}; border-radius: 14px 14px 14px 4px; padding: 7px 10px 6px; }}
 .meta {{ color: {t["meta"]}; font-size: 12px; text-align: right; }}
-.kb {{ display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }}
-.row {{ display: flex; gap: 4px; }}
-.key {{ flex: 1 1 0; min-width: 0; height: 40px; display: flex; align-items: center; justify-content: center;
-  background: {t["button"]}; color: {t["button_text"]}; border-radius: 7px; padding: 0 2px; font-size: 14px;
+.kb {{ display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }}
+.row {{ display: flex; gap: 2px; }}
+.key {{ flex: 1 1 0; min-width: 0; height: 22px; display: flex; align-items: center; justify-content: center;
+  background: {t["button"]}; color: {t["button_text"]}; border-radius: 4px; padding: 0 2px; font-size: 12px;
   font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
 .key.empty {{ opacity: 0.35; }}
+.row.weekdays .key {{ background: transparent; color: {t["meta"]}; font-weight: 400; }}
 </style><body><div id="shot"><div class="header"><div class="avatar" aria-hidden="true">C</div>
 <div><div class="title">Calendar Bot</div><div class="subtitle">bot</div></div></div>
 <div class="chat"><div class="msg"><div class="bubble"><div>{html.escape(text)}</div>

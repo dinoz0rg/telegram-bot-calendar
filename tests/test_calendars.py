@@ -201,3 +201,28 @@ def test_telethon_missing(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_markup_is_json_string() -> None:
     markup, _ = WMonthTelegramCalendar(current_date=TODAY).build()
     assert isinstance(markup, str) and "inline_keyboard" in json.loads(markup)
+
+
+def test_default_current_date_uses_frozen_today(monkeypatch: pytest.MonkeyPatch) -> None:
+    from telegram_bot_calendar import core
+
+    monkeypatch.setattr(core, "today", lambda: date(2020, 2, 10))
+    assert "Feb 2020" in labels(RangeTelegramCalendar().build()[0])
+    assert "cbcal_0_s_d_2020_2_10" in str(WMonthTelegramCalendar().build()[0])
+
+
+def test_markers_are_typed_singletons() -> None:
+    from telegram_bot_calendar.core import _Marker
+
+    assert isinstance(CANCELLED, _Marker) and isinstance(EXPIRED, _Marker)
+    assert (repr(CANCELLED), repr(EXPIRED)) == ("CANCELLED", "EXPIRED")
+    with pytest.raises(TypeError):
+        type("Sub", (_Marker,), {})
+
+
+def test_markers_compare_by_identity() -> None:
+    cal = WMonthTelegramCalendar(current_date=TODAY, cancel_button="Cancel", session="abc")
+    markup, _ = cal.build()
+    assert cal.process(data_for(markup, "Cancel"))[0] is CANCELLED
+    other = WMonthTelegramCalendar(current_date=TODAY, session="xyz")
+    assert other.process(data_for(markup, 1))[0] is EXPIRED
