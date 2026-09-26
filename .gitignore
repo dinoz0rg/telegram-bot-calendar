@@ -1,0 +1,6 @@
+.scratch/
+__pycache__/
+*.egg-info/
+dist/
+.venv/
+.coverage

@@ -1,0 +1,14 @@
+[
+  [{"text": "‹", "callback_data": "cbcal_0_g_d_2024_5_1"}, {"text": "Jun 2024", "callback_data": "cbcal_0_g_m_2024_6_15"}, {"text": "›", "callback_data": "cbcal_0_g_d_2024_7_1"}],
+  [{"text": "M", "callback_data": "cbcal_0_n"}, {"text": "T", "callback_data": "cbcal_0_n"}, {"text": "W", "callback_data": "cbcal_0_n"}, {"text": "T", "callback_data": "cbcal_0_n"}, {"text": "F", "callback_data": "cbcal_0_n"}, {"text": "S", "callback_data": "cbcal_0_n"}, {"text": "S", "callback_data": "cbcal_0_n"}],
+  [{"text": " ", "callback_data": "cbcal_0_n"}, {"text": " ", "callback_data": "cbcal_0_n"}, {"text": " ", "callback_data": "cbcal_0_n"}, {"text": " ", "callback_data": "cbcal_0_n"}, {"text": " ", "callback_data": "cbcal_0_n"}, {"text": "1", "callback_data": "cbcal_0_s_d_2024_6_1"}, {"text": "2", "callback_data": "cbcal_0_s_d_2024_6_2"}],
+  [{"text": "3", "callback_data": "cbcal_0_s_d_2024_6_3"}, {"text": "4", "callback_data": "cbcal_0_s_d_2024_6_4"}, {"text": "5", "callback_data": "cbcal_0_s_d_2024_6_5"}, {"text": "6", "callback_data": "cbcal_0_s_d_2024_6_6"}, {"text": "7", "callback_data": "cbcal_0_s_d_2024_6_7"}, {"text": "8", "callback_data": "cbcal_0_s_d_2024_6_8"}, {"text": "9", "callback_data": "cbcal_0_s_d_2024_6_9"}],
+  [{"text": "10", "callback_data": "cbcal_0_s_d_2024_6_10"}, {"text": "11", "callback_data": "cbcal_0_s_d_2024_6_11"}, {"text": "12", "callback_data": "cbcal_0_s_d_2024_6_12"}, {"text": "13", "callback_data": "cbcal_0_s_d_2024_6_13"}, {"text": "14", "callback_data": "cbcal_0_s_d_2024_6_14"}, {"text": "•15", "callback_data": "cbcal_0_s_d_2024_6_15"}, {"text": "16", "callback_data": "cbcal_0_s_d_2024_6_16"}],
+  [{"text": "17", "callback_data": "cbcal_0_s_d_2024_6_17"}, {"text": "18", "callback_data": "cbcal_0_s_d_2024_6_18"}, {"text": "19", "callback_data": "cbcal_0_s_d_2024_6_19"}, {"text": "20", "callback_data": "cbcal_0_s_d_2024_6_20"}, {"text": "21", "callback_data": "cbcal_0_s_d_2024_6_21"}, {"text": "22", "callback_data": "cbcal_0_s_d_2024_6_22"}, {"text": "23", "callback_data": "cbcal_0_s_d_2024_6_23"}],
+  [{"text": "24", "callback_data": "cbcal_0_s_d_2024_6_24"}, {"text": "25", "callback_data": "cbcal_0_s_d_2024_6_25"}, {"text": "26", "callback_data": "cbcal_0_s_d_2024_6_26"}, {"text": "27", "callback_data": "cbcal_0_s_d_2024_6_27"}, {"text": "28", "callback_data": "cbcal_0_s_d_2024_6_28"}, {"text": "29", "callback_data": "cbcal_0_s_d_2024_6_29"}, {"text": "30", "callback_data": "cbcal_0_s_d_2024_6_30"}],
+  [{"text": "This month", "callback_data": "cbcal_0_s_d_2024_6_30_r20240601"}, {"text": "Last month", "callback_data": "cbcal_0_s_d_2024_5_31_r20240501"}],
+  [{"text": "Last 7 days", "callback_data": "cbcal_0_s_d_2024_6_15_r20240609"}, {"text": "Year to date", "callback_data": "cbcal_0_s_d_2024_6_15_r20240101"}],
+  [{"text": "Today", "callback_data": "cbcal_0_s_d_2024_6_15_r20240615"}],
+  [{"text": "Cancel", "callback_data": "cbcal_0_c"}],
+  []
+]
