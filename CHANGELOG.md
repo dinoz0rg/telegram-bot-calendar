@@ -1,7 +1,8 @@
 # Changelog
 
-## 2.3.0 — 2026-09-27
+## 2.3.1 — 2026-09-27
 
+- Year view fills every slot: when today or max_date is near the edge, the window shifts so no year buttons are blank.
 - `mark_today=True` now shows today as a plain number on a coloured button (Bot API `style`, blue `"primary"` by default) instead of `•15`. It applies to the day grid and the range day views. Selected-range markers are unchanged.
 - `Style.today_style`: `"primary"`, `"success"`, `"danger"` or `None`. For the old look use `Style(today="•{day}", today_style=None)`.
 - Telethon buttons have no style, so there today keeps the `•` prefix.

@@ -79,10 +79,13 @@ class DetailedTelegramCalendar(CalendarBase):
 
     def _year_rows(self) -> Rows:
         count = YEARS_PER_ROW * YEAR_ROWS
-        offset = -((count - 1) // 2)
+        lo, hi = self.min_date.year, self.max_date.year
+        centred = self.current_date.year - (count - 1) // 2
+        # Keep the window inside [lo, hi] so no slot is blank unless the span is shorter than count.
+        first_year = max(min(max(centred, lo), hi - count + 1), lo)
+        offset = first_year - self.current_date.year
         slots = grid.year_slots(self.current_date, offset, count, self.min_date, self.max_date)
         keys = [self._pick(self._year_label(d.year) if d else "", cb.YEAR, d) for d in slots]
-        first_year = self.current_date.year + offset
         has_prev = first_year > self.min_date.year
         has_next = first_year + count <= self.max_date.year
         prev_d = grid.try_add_months(self.current_date, -12 * count) if has_prev else None
