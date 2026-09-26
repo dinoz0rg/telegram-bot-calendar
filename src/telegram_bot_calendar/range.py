@@ -111,7 +111,7 @@ class RangeTelegramCalendar(CalendarBase):
         rows.append([self._key(self.format_range(start, end))])
         rows.append(
             [
-                self._key(self.style.confirm, cb.CONFIRM, cb.DAY, end, start),
+                self._key(self.style.confirm, cb.CONFIRM, cb.DAY, end, start, style=self.style.confirm_style),
                 self._key(self.style.change, cb.CHANGE, cb.DAY, start),
             ]
         )
@@ -124,13 +124,16 @@ class RangeTelegramCalendar(CalendarBase):
         if not self._in_range(d):
             return self._key(self.style.blocked)
         text = str(self._day_label(d))
+        style = self._day_style(d)
         if d in (start, end):
             text = self.style.selected.format(day=text)
+            style = self.style.selected_style or style
         elif start is not None and end is not None and start < d < end:
             text = self.style.in_range.format(day=text)
+            style = self.style.in_range_style or style
         if end is not None:
-            return self._key(text)
-        return self._key(text, cb.SELECT, cb.DAY, d, start)
+            return self._key(text, style=style)
+        return self._key(text, cb.SELECT, cb.DAY, d, start, style=style)
 
     def _quick_picks(self) -> Rows:
         now = core.today()

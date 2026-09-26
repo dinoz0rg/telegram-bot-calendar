@@ -38,6 +38,9 @@ THEMES: dict[str, dict[str, str]] = {
         "header_text": "#000000",
         "subtitle": "#8a9aa9",
         "avatar": "#3a8bd6",
+        "primary": "#3390ec",
+        "success": "#31b545",
+        "danger": "#e53935",
     },
     "dark": {
         "page": "#0e1621",
@@ -50,6 +53,9 @@ THEMES: dict[str, dict[str, str]] = {
         "header_text": "#ffffff",
         "subtitle": "#6d7f8f",
         "avatar": "#5288c1",
+        "primary": "#3e88f7",
+        "success": "#3fb950",
+        "danger": "#e5534b",
     },
 }
 
@@ -82,7 +88,9 @@ def key(button: dict[str, Any]) -> str:
     label = html.escape(str(button["text"]))
     if not label.strip():
         return '<div class="key empty">&nbsp;</div>'
-    return f'<div class="key">{label}</div>'
+    style = button.get("style")
+    cls = f"key {style}" if style in ("primary", "success", "danger") else "key"
+    return f'<div class="{cls}">{label}</div>'
 
 
 def page(text: str, markup: str, theme: dict[str, str]) -> str:
@@ -114,6 +122,9 @@ body {{ margin: 0; background: {t["page"]}; font: 15px/1.35 -apple-system, "Sego
   background: {t["button"]}; color: {t["button_text"]}; border-radius: 4px; padding: 0 2px; font-size: 12px;
   font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
 .key.empty {{ opacity: 0.35; }}
+.key.primary {{ background: {t["primary"]}; color: #ffffff; }}
+.key.success {{ background: {t["success"]}; color: #ffffff; }}
+.key.danger {{ background: {t["danger"]}; color: #ffffff; }}
 .row.weekdays .key {{ background: transparent; color: {t["meta"]}; font-weight: 400; }}
 </style><body><div id="shot"><div class="header"><div class="avatar" aria-hidden="true">C</div>
 <div><div class="title">Calendar Bot</div><div class="subtitle">bot</div></div></div>

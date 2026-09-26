@@ -79,11 +79,11 @@ For full bots, see `examples/ptb_bot.py`, `examples/aiogram_bot.py` and `example
 | `rtl` | `False` | Reverse the button order of each row for right-to-left apps. |
 | `telethon` | `False` | Return Telethon `Button` rows instead of JSON. |
 | `additional_buttons` | `None` | Extra Bot API button dicts, two per row, added at the bottom. |
-| `style` | `None` | A `Style(...)` that sets button texts (arrows, markers, Confirm, and so on). |
+| `style` | `None` | A `Style(...)` that sets button texts (arrows, markers, Confirm, and so on) and button colours (`today_style`, `selected_style`, `in_range_style`, `confirm_style`). |
 | `cancel_button` | `None` | Text of a Cancel button. The button is shown only when you set this text. |
 | `session` | `None` | 1–8 letters or digits. Taps with another token return `EXPIRED`. See `new_session()`. |
 | `blocked_day_button` | `" "` (range: `"·"`) | Text shown for days outside the limits. |
-| `mark_today` | `False` (range: `True`) | Mark today's date. |
+| `mark_today` | `False` (range: `True`) | Mark today's date with a button colour (`Style.today_style`, default `"primary"`). |
 | `is_random` | `False` | Add a random salt to callbacks. |
 | `presets`, `show_today` | defaults | Range only: quick picks and the Today button. |
 

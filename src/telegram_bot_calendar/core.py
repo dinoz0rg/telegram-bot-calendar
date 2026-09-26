@@ -120,6 +120,9 @@ class CalendarBase:
         self.style = style or self.default_style
         if blocked_day_button is not None:
             self.style = replace(self.style, blocked=blocked_day_button)
+        for name in ("today_style", "selected_style", "in_range_style", "confirm_style"):
+            if getattr(self.style, name) not in render.STYLES:
+                raise ValueError(f"{name} must be None, 'primary', 'success' or 'danger'")
         self.salted = self.random_salt if is_random is None else is_random
         self.cancel_button = cancel_button
         self.session = session
@@ -178,10 +181,12 @@ class CalendarBase:
         step: str | None = None,
         day: date | None = None,
         start: date | None = None,
+        *,
+        style: str | None = None,
     ) -> render.Key:
         payload = cb.Payload(str(self.calendar_id), action, step, day, start, self.session)
         salt = random.randint(1, 10**18) if self.salted and action != cb.NOTHING else None
-        return label, cb.encode(payload, salt)
+        return label, cb.encode(payload, salt), style
 
     def _in_range(self, d: date) -> bool:
         return self.min_date <= d <= self.max_date
@@ -212,6 +217,10 @@ class CalendarBase:
         if self.mark_today and d == today():
             return self.style.today.format(day=d.day)
         return d.day
+
+    def _day_style(self, d: date) -> str | None:
+        """The Bot API button style for day ``d``: ``style.today_style`` on today, else None."""
+        return self.style.today_style if self.mark_today and d == today() else None
 
     def _finish(self, rows: render.Rows) -> Markup:
         rows = [row[::-1] for row in rows] if self.rtl else list(rows)

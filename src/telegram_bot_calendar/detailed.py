@@ -110,7 +110,7 @@ class DetailedTelegramCalendar(CalendarBase):
             row: list[Key] = []
             for n, slot in zip(week, slots):
                 if slot is not None:
-                    row.append(self._key(self._day_label(slot), cb.SELECT, cb.DAY, slot))
+                    row.append(self._key(self._day_label(slot), cb.SELECT, cb.DAY, slot, style=self._day_style(slot)))
                 else:
                     row.append(self._key(self.style.blocked if n else self.style.blank))
             rows.append(row)

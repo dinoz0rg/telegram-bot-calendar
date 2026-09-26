@@ -140,13 +140,13 @@ def test_range_flow() -> None:
     markup: Any
     markup, _ = cal.build()
     _, markup, step = RangeTelegramCalendar().process(data_for(markup, "20"))
-    assert step == "d" and "[20]" in labels(markup)
+    assert step == "d" and ("20", "primary") in [(b["text"], b.get("style")) for r in rows(markup) for b in r]
     _, markup, step = RangeTelegramCalendar().process(data_for(markup, "12"))
     assert step == "summary" and "12 Jun – 20 Jun 2024" in labels(markup)
-    result, _, step = RangeTelegramCalendar().process(data_for(markup, "Confirm"))
+    result, _, step = RangeTelegramCalendar().process(data_for(markup, "✓ Confirm"))
     assert result == (date(2024, 6, 12), date(2024, 6, 20)) and step == "summary"
     _, markup, step = RangeTelegramCalendar().process(data_for(markup, "Change"))
-    assert step == "d" and "[12]" not in labels(markup)
+    assert step == "d" and all(b.get("style") != "primary" or b["text"] == "15" for r in rows(markup) for b in r)
 
 
 def test_range_month_screen_and_presets() -> None:
