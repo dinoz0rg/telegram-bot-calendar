@@ -74,6 +74,9 @@ For full bots, see `examples/ptb_bot.py`, `examples/aiogram_bot.py` and `example
 | `locale` | `"en"` | Month and weekday names. See [Languages](#languages). |
 | `first_weekday` | `0` | First column of the day grid: `0` Monday … `6` Sunday, as in `calendar`. |
 | `month_names`, `weekday_names` | `None` | Your own 12 month and 7 weekday labels (Monday first). They replace the locale's names. |
+| `month_year_format` | `None` | Your own month+year label, for example `"{month} {year}"`. It must contain `{month}` and `{year}`. |
+| `buddhist_era` | `False` | Show years +543 in labels. Callbacks and returned dates stay Gregorian. |
+| `rtl` | `False` | Reverse the button order of each row for right-to-left apps. |
 | `telethon` | `False` | Return Telethon `Button` rows instead of JSON. |
 | `additional_buttons` | `None` | Extra Bot API button dicts, two per row, added at the bottom. |
 | `style` | `None` | A `Style(...)` that sets button texts (arrows, markers, Confirm, and so on). |
@@ -101,6 +104,8 @@ DetailedTelegramCalendar(
     weekday_names=["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
 )
 ```
+
+Month+year, year and day-month labels follow CLDR order per locale, for example `2026年5月` (`ja`) or `2026. máj.` (`hu`). `rtl` is off by default because Telegram clients may already mirror keyboards for right-to-left languages.
 
 ## Callback format
 

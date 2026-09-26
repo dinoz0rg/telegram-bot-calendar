@@ -10,7 +10,17 @@ from typing import Any, Callable, ClassVar, Final, Optional, Union, final
 
 from telegram_bot_calendar import callback as cb
 from telegram_bot_calendar import grid, render
-from telegram_bot_calendar.locales import MONTH_NAMES, WEEKDAY_NAMES, check_locale, check_names
+from telegram_bot_calendar.locales import (
+    DAY_MONTH,
+    DAY_MONTH_YEAR,
+    MONTH_NAMES,
+    MONTH_YEAR,
+    WEEKDAY_NAMES,
+    YEAR,
+    check_locale,
+    check_month_year_format,
+    check_names,
+)
 from telegram_bot_calendar.style import DEFAULT_STYLE, Style
 
 
@@ -74,6 +84,9 @@ class CalendarBase:
         first_weekday: int = 0,
         month_names: Sequence[str] | None = None,
         weekday_names: Sequence[str] | None = None,
+        month_year_format: str | None = None,
+        buddhist_era: bool = False,
+        rtl: bool = False,
     ) -> None:
         if not cb.valid_calendar_id(calendar_id):
             raise ValueError("calendar_id must be non-empty and must not contain '_'")
@@ -85,6 +98,15 @@ class CalendarBase:
         self.first_weekday = first_weekday
         self.month_names = check_names("month_names", month_names, 12, MONTH_NAMES[locale])
         self.weekday_names = check_names("weekday_names", weekday_names, 7, WEEKDAY_NAMES[locale])
+        self.month_year_format = check_month_year_format(month_year_format, MONTH_YEAR[locale])
+        self.year_format = YEAR[locale]
+        self.day_month_format = DAY_MONTH[locale]
+        self.day_month_year_format = DAY_MONTH_YEAR[locale]
+        for name, flag in (("buddhist_era", buddhist_era), ("rtl", rtl)):
+            if type(flag) is not bool:
+                raise ValueError(f"{name} must be True or False")
+        self.buddhist_era = buddhist_era
+        self.rtl = rtl
         self.calendar_id = calendar_id
         self.current_date = current_date or today()
         self.locale = locale
@@ -167,6 +189,21 @@ class CalendarBase:
     def _month_name(self, month: int) -> str:
         return self.month_names[month - 1]
 
+    def _year(self, year: int) -> int:
+        """The displayed year: +543 in the Buddhist era. Labels only."""
+        return year + 543 if self.buddhist_era else year
+
+    def _year_label(self, year: int) -> render.Label:
+        text = self.year_format.format(year=self._year(year))
+        return int(text) if text.isdigit() else text  # plain years stay ints, as before
+
+    def _month_year(self, d: date) -> str:
+        return self.month_year_format.format(month=self._month_name(d.month), year=self._year(d.year))
+
+    def _day_month(self, d: date, year: bool) -> str:
+        template = self.day_month_year_format if year else self.day_month_format
+        return template.format(day=d.day, month=self._month_name(d.month), year=self._year(d.year))
+
     def _weekday_row(self) -> list[render.Key]:
         names = self.weekday_names[self.first_weekday :] + self.weekday_names[: self.first_weekday]
         return [self._key(name) for name in names]
@@ -177,7 +214,7 @@ class CalendarBase:
         return d.day
 
     def _finish(self, rows: render.Rows) -> Markup:
-        rows = list(rows)
+        rows = [row[::-1] for row in rows] if self.rtl else list(rows)
         if self.cancel_button:
             rows.append([self._key(self.cancel_button, cb.CANCEL)])
         extra = grid.chunk(self.additional_buttons, 2) or [[]]

@@ -26,7 +26,7 @@ def test_readme_images_are_absolute() -> None:
 
 def test_pyproject_metadata() -> None:
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
-    assert project["version"] == "2.1.0"
+    assert project["version"] == "2.2.0"
     assert project["urls"] == {
         "Homepage": REPO,
         "Source": REPO,
@@ -39,4 +39,4 @@ def test_pyproject_metadata() -> None:
 
 
 def test_changelog_has_release() -> None:
-    assert "## 2.1.0 — 2026-09-27" in (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "## 2.2.0 — 2026-09-27" in (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")

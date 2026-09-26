@@ -9,6 +9,7 @@ from telegram_bot_calendar import callback as cb
 from telegram_bot_calendar import grid
 from telegram_bot_calendar.core import CalendarBase, Outcome
 from telegram_bot_calendar.render import Key, Rows
+from telegram_bot_calendar.style import Style
 
 YEARS_PER_ROW = 2
 YEAR_ROWS = 2
@@ -55,7 +56,13 @@ class DetailedTelegramCalendar(CalendarBase):
 
     def _title_values(self) -> dict[str, object]:
         d = self.current_date
-        return {"year": d.year, "month": self._month_name(d.month), "day": d.day}
+        return {"year": self._year(d.year), "month": self._month_name(d.month), "day": d.day}
+
+    def _title(self, title: str, default: str, locale_text: object) -> str:
+        """``title`` from the style; the locale's label when the style keeps the default."""
+        if title != default:
+            return title
+        return str(locale_text).replace("{", "{{").replace("}", "}}")  # _nav formats it again
 
     def _nav(
         self, step: str, prev_d: date | None, next_d: date | None, title: str, title_key: tuple[str, str | None]
@@ -74,7 +81,7 @@ class DetailedTelegramCalendar(CalendarBase):
         count = YEARS_PER_ROW * YEAR_ROWS
         offset = -((count - 1) // 2)
         slots = grid.year_slots(self.current_date, offset, count, self.min_date, self.max_date)
-        keys = [self._pick(d.year if d else "", cb.YEAR, d) for d in slots]
+        keys = [self._pick(self._year_label(d.year) if d else "", cb.YEAR, d) for d in slots]
         first_year = self.current_date.year + offset
         has_prev = first_year > self.min_date.year
         has_next = first_year + count <= self.max_date.year
@@ -89,7 +96,8 @@ class DetailedTelegramCalendar(CalendarBase):
         year = self.current_date.year
         prev_d = grid.try_add_months(self.current_date, -12) if year > self.min_date.year else None
         next_d = grid.try_add_months(self.current_date, 12) if year < self.max_date.year else None
-        nav = self._nav(cb.MONTH, prev_d, next_d, self.style.month_title, (cb.GOTO, cb.YEAR))
+        title = self._title(self.style.month_title, Style.month_title, self._year_label(year))
+        nav = self._nav(cb.MONTH, prev_d, next_d, title, (cb.GOTO, cb.YEAR))
         return [*grid.chunk(keys, MONTHS_PER_ROW), nav]
 
     def _day_rows(self) -> Rows:
@@ -109,7 +117,8 @@ class DetailedTelegramCalendar(CalendarBase):
         first, last = grid.first_of_month(d), grid.last_of_month(d)
         prev_d = grid.try_add_months(d, -1) if first > self.min_date else None
         next_d = grid.try_add_months(d, 1) if last < self.max_date else None
-        rows.append(self._nav(cb.DAY, prev_d, next_d, self.style.day_title, (cb.GOTO, cb.MONTH)))
+        title = self._title(self.style.day_title, Style.day_title, self._month_year(d))
+        rows.append(self._nav(cb.DAY, prev_d, next_d, title, (cb.GOTO, cb.MONTH)))
         return rows
 
 

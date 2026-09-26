@@ -68,11 +68,8 @@ class RangeTelegramCalendar(CalendarBase):
     def format_range(self, start: date, end: date) -> str:
         """For example ``1 Sep – 26 Sep 2026``; the year shows once if shared."""
 
-        def fmt(d: date, year: bool) -> str:
-            text = f"{d.day} {self._month_name(d.month)}"
-            return f"{text} {d.year}" if year else text
-
-        return self.style.range_text.format(start=fmt(start, start.year != end.year), end=fmt(end, True))
+        start_text = self._day_month(start, start.year != end.year)
+        return self.style.range_text.format(start=start_text, end=self._day_month(end, True))
 
     # -- screens ----------------------------------------------------------------------------
     def _first_rows(self) -> Rows:
@@ -93,7 +90,7 @@ class RangeTelegramCalendar(CalendarBase):
         return rows
 
     def _title(self) -> str:
-        return f"{self._month_name(self.current_date.month)} {self.current_date.year}"
+        return self._month_year(self.current_date)
 
     def _nav_grid(self, start: date | None) -> Rows:
         first = grid.first_of_month(self.current_date)
@@ -159,7 +156,7 @@ class RangeTelegramCalendar(CalendarBase):
                 keys.append(self._key(self._month_name(m), cb.GOTO, cb.DAY, first, start))
         prev_d = date(year - 1, 1, 1) if year > self.min_date.year else None
         next_d = date(year + 1, 1, 1) if year < self.max_date.year else None
-        title = self._key(str(year), cb.NOTHING)
+        title = self._key(str(self._year_label(year)), cb.NOTHING)
         return [self._arrows(cb.MONTH, title, prev_d, next_d, start), *grid.chunk(keys, MONTHS_PER_ROW)]
 
     # -- taps -------------------------------------------------------------------------------
