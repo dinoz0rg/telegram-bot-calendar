@@ -6,8 +6,6 @@ import calendar
 from datetime import date
 from typing import Optional, TypeVar
 
-_WEEK = calendar.Calendar(firstweekday=calendar.MONDAY)
-
 Slot = Optional[date]
 """A date the user may pick, or None for a cell with nothing to pick."""
 
@@ -43,16 +41,16 @@ def last_of_month(d: date) -> date:
     return d.replace(day=month_length(d.year, d.month))
 
 
-def day_weeks(year: int, month: int) -> list[list[int]]:
-    """Weeks of the month, Monday first; 0 marks padding outside the month."""
-    return _WEEK.monthdayscalendar(year, month)
+def day_weeks(year: int, month: int, first_weekday: int = calendar.MONDAY) -> list[list[int]]:
+    """Weeks of the month starting on ``first_weekday`` (0 = Monday); 0 marks padding."""
+    return calendar.Calendar(first_weekday).monthdayscalendar(year, month)
 
 
-def day_slots(year: int, month: int, lo: date, hi: date) -> list[list[Slot]]:
+def day_slots(year: int, month: int, lo: date, hi: date, first_weekday: int = calendar.MONDAY) -> list[list[Slot]]:
     """Rows of 7 slots; days outside ``[lo, hi]`` and padding are None."""
     return [
         [date(year, month, n) if n and lo <= date(year, month, n) <= hi else None for n in week]
-        for week in day_weeks(year, month)
+        for week in day_weeks(year, month, first_weekday)
     ]
 
 

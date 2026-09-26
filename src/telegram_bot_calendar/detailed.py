@@ -96,7 +96,8 @@ class DetailedTelegramCalendar(CalendarBase):
         d = self.current_date
         rows: Rows = [self._weekday_row()]
         for week, slots in zip(
-            grid.day_weeks(d.year, d.month), grid.day_slots(d.year, d.month, self.min_date, self.max_date)
+            grid.day_weeks(d.year, d.month, self.first_weekday),
+            grid.day_slots(d.year, d.month, self.min_date, self.max_date, self.first_weekday),
         ):
             row: list[Key] = []
             for n, slot in zip(week, slots):

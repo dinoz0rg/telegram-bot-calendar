@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import random
+from collections.abc import Sequence
 from dataclasses import replace
 from datetime import date
 from typing import Any, Callable, ClassVar, Final, Optional, Union, final
 
 from telegram_bot_calendar import callback as cb
 from telegram_bot_calendar import grid, render
-from telegram_bot_calendar.locales import MONTH_NAMES, WEEKDAY_NAMES, check_locale
+from telegram_bot_calendar.locales import MONTH_NAMES, WEEKDAY_NAMES, check_locale, check_names
 from telegram_bot_calendar.style import DEFAULT_STYLE, Style
 
 
@@ -70,12 +71,20 @@ class CalendarBase:
         session: str | None = None,
         blocked_day_button: str | None = None,
         mark_today: bool = False,
+        first_weekday: int = 0,
+        month_names: Sequence[str] | None = None,
+        weekday_names: Sequence[str] | None = None,
     ) -> None:
         if not cb.valid_calendar_id(calendar_id):
             raise ValueError("calendar_id must be non-empty and must not contain '_'")
         if session is not None and not cb.valid_session(session):
             raise ValueError("session must be 1-8 ASCII letters or digits")
         check_locale(locale)
+        if type(first_weekday) is not int or not 0 <= first_weekday <= 6:
+            raise ValueError("first_weekday must be an int from 0 (Monday) to 6 (Sunday)")
+        self.first_weekday = first_weekday
+        self.month_names = check_names("month_names", month_names, 12, MONTH_NAMES[locale])
+        self.weekday_names = check_names("weekday_names", weekday_names, 7, WEEKDAY_NAMES[locale])
         self.calendar_id = calendar_id
         self.current_date = current_date or today()
         self.locale = locale
@@ -156,10 +165,11 @@ class CalendarBase:
         return self.min_date <= d <= self.max_date
 
     def _month_name(self, month: int) -> str:
-        return MONTH_NAMES[self.locale][month - 1]
+        return self.month_names[month - 1]
 
     def _weekday_row(self) -> list[render.Key]:
-        return [self._key(name) for name in WEEKDAY_NAMES[self.locale]]
+        names = self.weekday_names[self.first_weekday :] + self.weekday_names[: self.first_weekday]
+        return [self._key(name) for name in names]
 
     def _day_label(self, d: date) -> render.Label:
         if self.mark_today and d == today():

@@ -4,12 +4,12 @@ Date and date-range pickers for Telegram bots, built as inline keyboards.
 
 | | |
 |---|---|
-| ![Day picker light](docs/img/day-picker-light.png)<br>Day picker (light) | ![Day picker dark](docs/img/day-picker-dark.png)<br>Day picker (dark) |
-| ![Month picker light](docs/img/month-picker-light.png)<br>Month picker (light) | ![Month picker dark](docs/img/month-picker-dark.png)<br>Month picker (dark) |
-| ![Year picker light](docs/img/year-picker-light.png)<br>Year picker (light) | ![Year picker dark](docs/img/year-picker-dark.png)<br>Year picker (dark) |
-| ![Blocked days + today light](docs/img/blocked-today-light.png)<br>Blocked days + today (light) | ![Blocked days + today dark](docs/img/blocked-today-dark.png)<br>Blocked days + today (dark) |
-| ![Range + Confirm light](docs/img/range-confirm-light.png)<br>Range + Confirm (light) | ![Range + Confirm dark](docs/img/range-confirm-dark.png)<br>Range + Confirm (dark) |
-| ![Quick picks + Cancel light](docs/img/quick-picks-light.png)<br>Quick picks + Cancel (light) | ![Quick picks + Cancel dark](docs/img/quick-picks-dark.png)<br>Quick picks + Cancel (dark) |
+| ![Day picker light](https://raw.githubusercontent.com/dinoz0rg/telegram-bot-calendar/main/docs/img/day-picker-light.png)<br>Day picker (light) | ![Day picker dark](https://raw.githubusercontent.com/dinoz0rg/telegram-bot-calendar/main/docs/img/day-picker-dark.png)<br>Day picker (dark) |
+| ![Month picker light](https://raw.githubusercontent.com/dinoz0rg/telegram-bot-calendar/main/docs/img/month-picker-light.png)<br>Month picker (light) | ![Month picker dark](https://raw.githubusercontent.com/dinoz0rg/telegram-bot-calendar/main/docs/img/month-picker-dark.png)<br>Month picker (dark) |
+| ![Year picker light](https://raw.githubusercontent.com/dinoz0rg/telegram-bot-calendar/main/docs/img/year-picker-light.png)<br>Year picker (light) | ![Year picker dark](https://raw.githubusercontent.com/dinoz0rg/telegram-bot-calendar/main/docs/img/year-picker-dark.png)<br>Year picker (dark) |
+| ![Blocked days + today light](https://raw.githubusercontent.com/dinoz0rg/telegram-bot-calendar/main/docs/img/blocked-today-light.png)<br>Blocked days + today (light) | ![Blocked days + today dark](https://raw.githubusercontent.com/dinoz0rg/telegram-bot-calendar/main/docs/img/blocked-today-dark.png)<br>Blocked days + today (dark) |
+| ![Range + Confirm light](https://raw.githubusercontent.com/dinoz0rg/telegram-bot-calendar/main/docs/img/range-confirm-light.png)<br>Range + Confirm (light) | ![Range + Confirm dark](https://raw.githubusercontent.com/dinoz0rg/telegram-bot-calendar/main/docs/img/range-confirm-dark.png)<br>Range + Confirm (dark) |
+| ![Quick picks + Cancel light](https://raw.githubusercontent.com/dinoz0rg/telegram-bot-calendar/main/docs/img/quick-picks-light.png)<br>Quick picks + Cancel (light) | ![Quick picks + Cancel dark](https://raw.githubusercontent.com/dinoz0rg/telegram-bot-calendar/main/docs/img/quick-picks-dark.png)<br>Quick picks + Cancel (dark) |
 
 ## Install
 
@@ -71,7 +71,9 @@ For full bots, see `examples/ptb_bot.py`, `examples/aiogram_bot.py` and `example
 | `current_date` | today | The date the calendar opens at. |
 | `min_date` | `date(1, 1, 1)` | Earliest date that can be picked. |
 | `max_date` | `date(2999, 12, 31)` | Latest date that can be picked. |
-| `locale` | `"en"` | Month and weekday names: `en`, `eo`, `ru`. |
+| `locale` | `"en"` | Month and weekday names. See [Languages](#languages). |
+| `first_weekday` | `0` | First column of the day grid: `0` Monday … `6` Sunday, as in `calendar`. |
+| `month_names`, `weekday_names` | `None` | Your own 12 month and 7 weekday labels (Monday first). They replace the locale's names. |
 | `telethon` | `False` | Return Telethon `Button` rows instead of JSON. |
 | `additional_buttons` | `None` | Extra Bot API button dicts, two per row, added at the bottom. |
 | `style` | `None` | A `Style(...)` that sets button texts (arrows, markers, Confirm, and so on). |
@@ -81,6 +83,24 @@ For full bots, see `examples/ptb_bot.py`, `examples/aiogram_bot.py` and `example
 | `mark_today` | `False` (range: `True`) | Mark today's date. |
 | `is_random` | `False` | Add a random salt to callbacks. |
 | `presets`, `show_today` | defaults | Range only: quick picks and the Today button. |
+
+## Languages
+
+| codes |
+|---|
+| `ar` `az` `bg` `bn` `ca` `cs` `da` `de` `el` `en` `eo` `es` `et` `fa` `fi` `fil` `fr` `he` `hi` `hr` |
+| `hu` `id` `it` `ja` `ka` `kk` `ko` `lt` `lv` `ms` `nb` `nl` `pl` `pt` `pt_BR` `ro` `ru` `sk` `sl` `sr` |
+| `sv` `sw` `ta` `th` `tr` `uk` `ur` `uz` `vi` `zh_Hans` `zh_Hant` |
+
+The names come from CLDR (`scripts/gen_locales.py`). To use your own wording:
+
+```python
+DetailedTelegramCalendar(
+    locale="de",
+    first_weekday=6,
+    weekday_names=["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
+)
+```
 
 ## Callback format
 

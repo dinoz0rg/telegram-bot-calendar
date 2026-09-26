@@ -1,18 +1,12 @@
-"""Month and weekday names per locale. Weeks start on Monday."""
+"""Month and weekday names per locale, Monday first, plus checks for owner overrides."""
 
 from __future__ import annotations
 
-MONTH_NAMES: dict[str, tuple[str, ...]] = {
-    "en": ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
-    "eo": ("jan", "feb", "mar", "apr", "maj", "jun", "jul", "aŭg", "sep", "okt", "nov", "dec"),
-    "ru": ("янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"),
-}
+from collections.abc import Sequence
 
-WEEKDAY_NAMES: dict[str, tuple[str, ...]] = {
-    "en": ("M", "T", "W", "T", "F", "S", "S"),
-    "eo": ("L", "M", "M", "Ĵ", "V", "S", "D"),
-    "ru": ("П", "В", "С", "Ч", "П", "С", "В"),
-}
+from telegram_bot_calendar._locale_data import MONTH_NAMES, WEEKDAY_NAMES
+
+__all__ = ["MONTH_NAMES", "WEEKDAY_NAMES", "check_locale", "check_names"]
 
 
 def check_locale(locale: str) -> None:
@@ -20,3 +14,12 @@ def check_locale(locale: str) -> None:
     if locale not in MONTH_NAMES:
         known = ", ".join(sorted(MONTH_NAMES))
         raise ValueError(f"unknown locale {locale!r}; choose one of: {known}")
+
+
+def check_names(kwarg: str, names: Sequence[str] | None, count: int, default: tuple[str, ...]) -> tuple[str, ...]:
+    """``names`` as a tuple of ``count`` non-empty strings, or ``default`` when None."""
+    if names is None:
+        return default
+    if isinstance(names, str) or len(names) != count or not all(isinstance(n, str) and n.strip() for n in names):
+        raise ValueError(f"{kwarg} must be {count} non-empty strings")
+    return tuple(names)

@@ -88,7 +88,7 @@ class RangeTelegramCalendar(CalendarBase):
     def _month_grid(self, title_row: list[Key], start: date | None, end: date | None) -> Rows:
         first = grid.first_of_month(self.current_date)
         rows: Rows = [title_row, self._weekday_row()]
-        for week in grid.day_weeks(first.year, first.month):
+        for week in grid.day_weeks(first.year, first.month, self.first_weekday):
             rows.append([self._day_key(first, n, start, end) for n in week])
         return rows
 

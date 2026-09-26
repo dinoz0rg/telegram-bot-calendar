@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "telegram-bot-calendar"
-version = "2.0.0"
+version = "2.1.0"
 description = "Inline calendar and date-range keyboards for Telegram bots."
 readme = "README.md"
 license = "MIT"
@@ -13,14 +13,25 @@ requires-python = ">=3.9"
 keywords = ["telegram", "calendar", "bot", "inline keyboard", "date picker"]
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent",
     "Typing :: Typed",
 ]
 dependencies = []
 
+[project.urls]
+Homepage = "https://github.com/dinoz0rg/telegram-bot-calendar"
+Source = "https://github.com/dinoz0rg/telegram-bot-calendar"
+Issues = "https://github.com/dinoz0rg/telegram-bot-calendar/issues"
+Changelog = "https://github.com/dinoz0rg/telegram-bot-calendar/blob/main/CHANGELOG.md"
+
 [project.optional-dependencies]
 telethon = ["telethon"]
-dev = ["pytest", "pytest-cov", "hypothesis", "mypy", "ruff", "build", "twine"]
+dev = ["pytest", "pytest-cov", "hypothesis", "mypy", "ruff", "build", "twine", "babel"]
 docs = ["playwright"]
 
 [tool.hatch.build.targets.wheel]
@@ -43,7 +54,7 @@ target-version = "py39"
 
 [tool.ruff.format]
 # The README quick start is kept compact on purpose (15 lines).
-exclude = ["*.md"]
+exclude = ["*.md", "src/telegram_bot_calendar/_locale_data.py"]  # generated
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
@@ -53,8 +64,8 @@ allowed-confusables = ["В", "С", "×", "–", "‹", "›"]
 [tool.mypy]
 strict = true
 mypy_path = "src"
-files = ["src", "tests", "docs"]
+files = ["src", "tests", "docs", "scripts"]
 
 [[tool.mypy.overrides]]
-module = ["telethon", "telethon.*", "playwright.*"]
+module = ["telethon", "telethon.*", "playwright.*", "babel", "babel.*"]
 ignore_missing_imports = true
