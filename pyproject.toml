@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "telegram-bot-calendar"
-version = "2.3.2"
+version = "2.3.3"
 description = "Inline calendar and date-range keyboards for Telegram bots."
 readme = "README.md"
 license = "MIT"

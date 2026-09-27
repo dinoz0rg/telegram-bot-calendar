@@ -81,16 +81,17 @@ class DetailedTelegramCalendar(CalendarBase):
         count = YEARS_PER_ROW * YEAR_ROWS
         lo, hi = self.min_date.year, self.max_date.year
         centred = self.current_date.year - (count - 1) // 2
-        # Keep the window inside [lo, hi] so no slot is blank unless the span is shorter than count.
-        first_year = max(min(max(centred, lo), hi - count + 1), lo)
+        # Centre on the current year, clamped to max_date only; years below min_date are blanked
+        # by year_slots. A short span (fewer than count years) starts at min_date.
+        first_year = lo if hi - lo + 1 < count else min(centred, hi - count + 1)
         offset = first_year - self.current_date.year
         slots = grid.year_slots(self.current_date, offset, count, self.min_date, self.max_date)
         keys = [self._pick(self._year_label(d.year) if d else "", cb.YEAR, d) for d in slots]
         has_prev = first_year > self.min_date.year
         has_next = first_year + count <= self.max_date.year
         # Aim at the centre of the adjacent page so re-centring lands exactly on it (no overlap).
-        prev_first = max(first_year - count, lo)
-        next_first = max(min(first_year + count, hi - count + 1), lo)
+        prev_first = first_year - count
+        next_first = min(first_year + count, hi - count + 1)
         shift = (count - 1) // 2 - self.current_date.year
         prev_d = grid.try_add_months(self.current_date, 12 * (prev_first + shift)) if has_prev else None
         next_d = grid.try_add_months(self.current_date, 12 * (next_first + shift)) if has_next else None
