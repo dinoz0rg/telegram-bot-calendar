@@ -88,8 +88,12 @@ class DetailedTelegramCalendar(CalendarBase):
         keys = [self._pick(self._year_label(d.year) if d else "", cb.YEAR, d) for d in slots]
         has_prev = first_year > self.min_date.year
         has_next = first_year + count <= self.max_date.year
-        prev_d = grid.try_add_months(self.current_date, -12 * count) if has_prev else None
-        next_d = grid.try_add_months(self.current_date, 12 * count) if has_next else None
+        # Aim at the centre of the adjacent page so re-centring lands exactly on it (no overlap).
+        prev_first = max(first_year - count, lo)
+        next_first = max(min(first_year + count, hi - count + 1), lo)
+        shift = (count - 1) // 2 - self.current_date.year
+        prev_d = grid.try_add_months(self.current_date, 12 * (prev_first + shift)) if has_prev else None
+        next_d = grid.try_add_months(self.current_date, 12 * (next_first + shift)) if has_next else None
         nav = self._nav(cb.YEAR, prev_d, next_d, self.style.year_title, (cb.NOTHING, None))
         return [*grid.chunk(keys, YEARS_PER_ROW), nav]
 

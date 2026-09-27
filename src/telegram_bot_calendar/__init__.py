@@ -6,7 +6,7 @@ from telegram_bot_calendar.detailed import DetailedTelegramCalendar, WMonthTeleg
 from telegram_bot_calendar.range import DEFAULT_PRESETS, SUMMARY, RangeTelegramCalendar
 from telegram_bot_calendar.style import Style
 
-__version__ = "2.3.1"
+__version__ = "2.3.2"
 
 __all__ = [
     "CANCELLED",

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.2 — 2026-09-27
+
+- Year view: `<<` / `>>` now move to the next full page of years, so no year appears on two pages. Pages are still clamped to `min_date`/`max_date` with no blank slots. Callback data format is unchanged.
+
 ## 2.3.1 — 2026-09-27
 
 - Year view fills every slot: when today or max_date is near the edge, the window shifts so no year buttons are blank.

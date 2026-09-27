@@ -237,7 +237,7 @@ def test_year_grid_clamps_to_max_date() -> None:
     cal = DetailedTelegramCalendar(current_date=date(2026, 6, 1), max_date=date(2026, 12, 31))
     years, prev, nxt = _year_view(cal.build()[0])
     assert years == [2023, 2024, 2025, 2026]
-    assert prev == {"text": "<<", "callback_data": "cbcal_0_g_y_2022_6_1"}
+    assert prev == {"text": "<<", "callback_data": "cbcal_0_g_y_2020_6_1"}
     assert nxt["callback_data"] == "cbcal_0_n"
 
 
@@ -262,7 +262,7 @@ def test_year_paging_never_blank() -> None:
         _, page, _ = DetailedTelegramCalendar(**kw).process(prev["callback_data"])
         assert page is not None
         markup = page
-    assert firsts == [2023, 2021, 2017, 2015]
+    assert firsts == [2023, 2019, 2015]
     _, nxt_markup, _ = DetailedTelegramCalendar(**kw).process(_year_view(markup)[2]["callback_data"])
     assert " " not in _year_view(nxt_markup)[0]
 
@@ -272,3 +272,34 @@ def test_year_grid_short_span_keeps_blanks() -> None:
     years, prev, nxt = _year_view(DetailedTelegramCalendar(current_date=date(2026, 6, 1), **kw).build()[0])
     assert years == [2025, 2026, " ", " "]
     assert prev["callback_data"] == nxt["callback_data"] == "cbcal_0_n"
+
+
+def _page(data: str, **kw: Any) -> tuple[list[Any], dict[str, Any], dict[str, Any]]:
+    _, markup, _ = DetailedTelegramCalendar(**kw).process(data)
+    assert markup is not None
+    return _year_view(markup)
+
+
+def test_year_paging_pages_do_not_overlap() -> None:
+    kw: dict[str, Any] = {"max_date": date(2026, 12, 31)}
+    years, prev, _ = _year_view(DetailedTelegramCalendar(current_date=date(2026, 6, 1), **kw).build()[0])
+    assert years == [2023, 2024, 2025, 2026]
+    years, prev, nxt = _page(prev["callback_data"], **kw)
+    assert years == [2019, 2020, 2021, 2022]
+    assert _page(prev["callback_data"], **kw)[0] == [2015, 2016, 2017, 2018]
+    assert _page(nxt["callback_data"], **kw)[0] == [2023, 2024, 2025, 2026]
+
+
+def test_year_paging_prev_clamps_to_min_date() -> None:
+    kw: dict[str, Any] = {"min_date": date(2021, 1, 1), "max_date": date(2026, 12, 31)}
+    years, prev, _ = _year_view(DetailedTelegramCalendar(current_date=date(2026, 6, 1), **kw).build()[0])
+    assert years == [2023, 2024, 2025, 2026]
+    assert _page(prev["callback_data"], **kw)[0] == [2021, 2022, 2023, 2024]
+
+
+def test_year_paging_clamps_feb_29() -> None:
+    cal = DetailedTelegramCalendar(current_date=date(2024, 2, 29), max_date=date(2027, 12, 31))
+    years, prev, nxt = _year_view(cal.build()[0])
+    assert years == [2023, 2024, 2025, 2026]
+    assert prev["callback_data"] == "cbcal_0_g_y_2020_2_29"
+    assert nxt["callback_data"] == "cbcal_0_g_y_2025_2_28"
